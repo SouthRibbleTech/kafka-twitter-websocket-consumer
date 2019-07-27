@@ -1,56 +1,89 @@
 const { Kafka } = require('kafkajs')
 const WebSocket = require('ws')
 
-console.log("Connecting to kafka server...")
-const kafka = new Kafka({
-    clientId: 'mysql_twitter',
-    brokers: ['192.168.0.6:9092']
-  })
-  const consumer = kafka.consumer({ groupId: 'websocket_twitter' })
+class TwitterWS {
 
-const wss = new WebSocket.Server({
-    port: 9090,
-    perMessageDeflate: {
-        zlibDeflateOptions: {
-            chunkSize: 1024,
-            memLevel: 7,
-            level: 3
-        },
-        zlibInflateOptions: {
-            chunkSize: 10 * 1024
-        },
-        clientNoContextTakeover: true,
-        serverNoContextTakeover: true,
-        serverMaxWindowBits: 10,
-        concurrencyLimit: 10,
-        threshold: 1024
+    constructor() {
+        console.log("Connecting to kafka server...")
+        const kafka = new Kafka({
+            clientId: 'mysql_twitter',
+            brokers: ['192.168.0.6:9092']
+        })
+        this.consumer = kafka.consumer({ groupId: 'websocket_twitter' })
+        this.wss = null
+        this.isAlive = false
     }
-})
 
-wss.on('connection', async (ws)=>{
-    ws.on('message', (message)=>{
-        console.log(`received: ${message}`)
-        ws.send(`We got your message: ${message}`)
-    })
-    
-    ws.send('You are connected to the server')
+    noop(params) {}
 
-    await consumer.connect()
-    await consumer.subscribe({ topic: 'tweets', fromBeginning: false })
-    await consumer.run({
-        eachMessage: async ({ topic, partition, message}) => {
-            ws.send(message.value.toString())
+    listen() {
+        try{
+            this.wss = new WebSocket.Server({
+                port: 9090,
+                perMessageDeflate: {
+                    zlibDeflateOptions: {
+                        chunkSize: 1024,
+                        memLevel: 7,
+                        level: 3
+                    },
+                    zlibInflateOptions: {
+                        chunkSize: 10 * 1024
+                    },
+                    clientNoContextTakeover: true,
+                    serverNoContextTakeover: true,
+                    serverMaxWindowBits: 10,
+                    concurrencyLimit: 10,
+                    threshold: 1024
+                }
+            })
+            console.log("Web socket server listening on port: 9090")
+        }catch(err){
+            console.log("Error starting web socket server:", err)
         }
-    })
-})
 
-wss.on('close', async ()=>{
-    console.log("client disconnected")
-    console.log("Terminatig connection to kafka")
-    try{
-        await consumer.disconnect()
-        console.log("Kafka connection closed for client")
-    } catch(err) {
-        console.log("Error disconnecting from kafka", err)
+        this.wss.on('connection', async (ws)=>{
+            ws.on('message', (message)=>{
+                console.log(`received: ${message}`)
+                ws.send(`We got your message: ${message}`)
+            })
+            
+            ws.send('You are connected to the server')
+            let alive = true
+            
+
+            setInterval(()=>{
+                if(this.isAlive === false) {
+                    try{
+                        this.consumer.disconnect()
+                    }catch(err){
+                        console.log("Error disconnecting from kafka: ", err)
+                    }
+                    try{
+                        ws.terminate()
+                    }catch(err){
+                        console.log("Error disconnecting web socket client: ", err)
+                    }
+                }else{
+                    ws.ping(this.noop)
+                }
+            }, 30000)
+        
+            await consumer.connect()
+            await consumer.subscribe({ topic: 'tweets', fromBeginning: false })
+            await consumer.run({
+                eachMessage: async ({ topic, partition, message}) => {
+                    ws.send(message.value.toString())
+                }
+            })
+
+            ws.on('pong',()=>{
+                this.isAlive = true
+            })
+        })
     }
-})
+
+    
+}
+
+var tw = new TwitterWS()
+tw.listen()
