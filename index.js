@@ -11,6 +11,11 @@ class TwitterWS {
         })
         this.consumer = kafka.consumer({ groupId: 'websocket_twitter' })
         this.wss = null
+        this.keyword_count = {
+            boris: 0,
+            trump: 0,
+            iran: 0
+        }
     }
 
     
@@ -43,14 +48,30 @@ class TwitterWS {
         })
 
         await this.consumer.connect()
-        await this.consumer.subscribe({ topic: 'tweets', fromBeginning: false })
+        await this.consumer.subscribe({ topic: 'tweets', fromBeginning: true })
         await this.consumer.run({
             eachMessage: async ({ topic, partition, message}) => {
-                this.wss.clients.forEach((ws)=>{
-                    ws.send(message.value.toString())
-                })
+                
+                    if(message.value.text.toLowerCase().indexOf('trump')){
+                        this.keyword_count.trump ++
+                    }
+                    if(message.value.text.toLowerCase().indexOf('boris')){
+                        this.keyword_count.boris ++
+                    }
+                    if(message.value.text.toLowerCase().indexOf('iran')){
+                        this.keyword_count.iran ++
+                    }
+                    if(message.value.text.toLowerCase().indexOf('bitcoin')){
+                        this.keyword_count.bitcoin ++
+                    }
             }
         })
+
+        setInterval(()=>{
+            this.wss.clients.forEach((ws)=>{
+                ws.send(JSON.stringify(this.keyword_count))
+            })
+        },5000)
     }
 }
 
