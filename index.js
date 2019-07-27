@@ -51,21 +51,15 @@ class TwitterWS {
         await this.consumer.subscribe({ topic: 'tweets', fromBeginning: true })
         await this.consumer.run({
             eachMessage: async ({ topic, partition, message}) => {
-                    var textTxt = message.value.text.toString().toLowerCase()
-                    var extendedTxt = message.value.extended_tweet.full_text.toString().toLowerCase()
+                    var tweet = JSON.parse(message.value.toString())
+                    var textTxt = tweet.text.toString().toLowerCase()
+                    var extendedTxt = tweet.extended_tweet.full_text.toString().toLowerCase()
                     console.log(textTxt)
                     console.log("Extended: ", extendedTxt)
-                    if(msgTxt.indexOf('trump') || extendedTxt.indexOf('trump')){
-                        this.keyword_count.trump ++
-                    }
-                    if(message.value.text.toLowerCase().indexOf('boris')){
-                        this.keyword_count.boris ++
-                    }
-                    if(message.value.text.toLowerCase().indexOf('iran')){
-                        this.keyword_count.iran ++
-                    }
-                    if(message.value.text.toLowerCase().indexOf('bitcoin')){
-                        this.keyword_count.bitcoin ++
+                    for(var word of this.keyword_count){
+                        if(textTxt.indexOf(word)){
+                            this.keyword_count[word] ++
+                        }
                     }
             }
         })
