@@ -54,18 +54,18 @@ class TwitterWS {
             eachMessage: async ({ topic, partition, message}) => {
                     var tweet = JSON.parse(message.value.toString())
                     console.log(tweet)
-                    var textTxt = tweet.text.toString().toLowerCase()
-                    try{
-                        var extendedTxt = tweet.extended_tweet.full_text.toString().toLowerCase()
-                    }catch(err){
-                        var extendedTxt = ""
-                    }
+                    // var textTxt = tweet.text.toString().toLowerCase()
+                    // try{
+                    //     var extendedTxt = tweet.extended_tweet.full_text.toString().toLowerCase()
+                    // }catch(err){
+                    //     var extendedTxt = ""
+                    // }
                    
-                    for(var word in this.keyword_count){
-                        if(textTxt.indexOf(word)){
-                            this.keyword_count[word] ++
-                        }
-                    }
+                    // for(var word in this.keyword_count){
+                    //     if(textTxt.indexOf(word)){
+                    //         this.keyword_count[word] ++
+                    //     }
+                    // }
             }
             
         })
