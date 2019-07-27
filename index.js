@@ -16,7 +16,9 @@ class TwitterWS {
             trump: 0,
             iran: 0,
             bitcoin: 0,
-            crypto: 0
+            crypto: 0,
+            ethereum: 0,
+            simon_carr: 0
         }
     }
 
