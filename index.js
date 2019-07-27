@@ -54,7 +54,11 @@ class TwitterWS {
             eachMessage: async ({ topic, partition, message}) => {
                     var tweet = JSON.parse(message.value.toString())
                     var textTxt = tweet.text.toString().toLowerCase()
-                    var extendedTxt = tweet.extended_tweet.full_text.toString().toLowerCase()
+                    try{
+                        var extendedTxt = tweet.extended_tweet.full_text.toString().toLowerCase()
+                    }catch(err){
+                        var extendedTxt = ""
+                    }
                     console.log(textTxt)
                     console.log("Extended: ", extendedTxt)
                     for(var word in this.keyword_count){
