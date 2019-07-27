@@ -49,6 +49,7 @@ class TwitterWS {
 
         await this.consumer.connect()
         await this.consumer.subscribe({ topic: 'tweets', fromBeginning: true })
+        try{
         await this.consumer.run({
             eachMessage: async ({ topic, partition, message}) => {
                     var tweet = JSON.parse(message.value.toString())
@@ -62,7 +63,11 @@ class TwitterWS {
                         }
                     }
             }
+            
         })
+        }catch(err){
+            console.log("Each message error: ", err)
+        }
 
         setInterval(()=>{
             this.wss.clients.forEach((ws)=>{
