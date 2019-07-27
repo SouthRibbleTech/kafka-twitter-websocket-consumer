@@ -67,9 +67,10 @@ class TwitterWS {
                         }catch(err){}
                     }
                     
-                   
+                    console.log("text: ", textTxt)
+                    console.log("extended: ", extendedTxt)
                     for(var word in this.keyword_count){
-                        if(textTxt.indexOf(word) || extendedTxt.indexOf(word)){
+                        if(textTxt.toString().indexOf(word) || extendedTxt.toString().indexOf(word)){
                             this.keyword_count[word] ++
                         }
                     }
