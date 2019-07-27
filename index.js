@@ -42,5 +42,15 @@ wss.on('connection', async (ws)=>{
             ws.send(message.value.toString())
         }
     })
+})
 
+wss.on('close', async ()=>{
+    console.log("client disconnected")
+    console.log("Terminatig connection to kafka")
+    try{
+        await consumer.disconnect()
+        console.log("Kafka connection closed for client")
+    } catch(err) {
+        console.log("Error disconnecting from kafka", err)
+    }
 })
