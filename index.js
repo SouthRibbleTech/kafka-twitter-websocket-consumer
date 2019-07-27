@@ -14,7 +14,9 @@ class TwitterWS {
         this.keyword_count = {
             boris: 0,
             trump: 0,
-            iran: 0
+            iran: 0,
+            bitcoin: 0,
+            crypto: 0
         }
     }
 
@@ -71,6 +73,7 @@ class TwitterWS {
                         if(textTxt){
                             if(textTxt.indexOf(word)){
                                 this.keyword_count[word] ++
+                                continue
                             }
                         }
                         if(extendedTxt){
