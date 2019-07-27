@@ -54,26 +54,32 @@ class TwitterWS {
             eachMessage: async ({ topic, partition, message}) => {
                     var tweet = JSON.parse(message.value.toString())
                     console.log("Tweet should be here", tweet)
-                    // var textTxt = null
-                    // var extendedTxt = null
-                    // try{
-                    //     textTxt = tweet.text.toLowerCase()
-                    // }catch(err){}
-                    // try{
-                    //     extendedTxt = tweet.extended_tweet.full_text.toLowerCase()
-                    // }catch(err){
-                    //     try{
-                    //         extendedTxt = tweet.quoted_status.extended_tweet.full_text.toLowerCase()
-                    //     }catch(err){}
-                    // }
+                    var textTxt = null
+                    var extendedTxt = null
+                    try{
+                        textTxt = tweet.text.toLowerCase()
+                    }catch(err){}
+                    try{
+                        extendedTxt = tweet.extended_tweet.full_text.toLowerCase()
+                    }catch(err){
+                        try{
+                            extendedTxt = tweet.quoted_status.extended_tweet.full_text.toLowerCase()
+                        }catch(err){}
+                    }
                     
-                    // console.log("text: ", textTxt)
-                    // console.log("extended: ", extendedTxt)
-                    // for(var word in this.keyword_count){
-                    //     if(textTxt.toString().indexOf(word) || extendedTxt.toString().indexOf(word)){
-                    //         this.keyword_count[word] ++
-                    //     }
-                    // }
+                  
+                    for(var word in this.keyword_count){
+                        if(textTxt){
+                            if(textTxt.indexOf(word)){
+                                this.keyword_count[word] ++
+                            }
+                        }
+                        if(extendedTxt){
+                            if(extendedTxt.indexOf(word)){
+                                this.keyword_count[word] ++
+                            }
+                        }
+                    }
             }
             
         })
