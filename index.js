@@ -73,7 +73,6 @@ class TwitterWS {
                         if(textTxt){
                             if(textTxt.indexOf(word)){
                                 this.keyword_count[word] ++
-                                continue
                             }
                         }
                         if(extendedTxt){
