@@ -67,8 +67,17 @@ class TwitterWS {
                     ws.ping(this.noop)
                 }
             }, 30000)
-        
-            await this.consumer.connect()
+
+            try{
+                await this.consumer.disconnect()
+            }catch(err){}
+
+            try{
+                await this.consumer.connect()
+            }catch(err){
+                console.log("error connecting to Kafka: ", err)
+                
+            }
             await this.consumer.subscribe({ topic: 'tweets', fromBeginning: false })
             await this.consumer.run({
                 eachMessage: async ({ topic, partition, message}) => {
