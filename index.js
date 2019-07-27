@@ -11,11 +11,9 @@ class TwitterWS {
         })
         this.consumer = kafka.consumer({ groupId: 'websocket_twitter' })
         this.wss = null
-        this.isAlive = false
     }
 
-    noop(params) {}
-
+    
     listen() {
         try{
             this.wss = new WebSocket.Server({
@@ -40,58 +38,20 @@ class TwitterWS {
         }catch(err){
             console.log("Error starting web socket server:", err)
         }
-
-        this.wss.on('connection', async (ws)=>{
-            ws.on('message', (message)=>{
-                console.log(`received: ${message}`)
-                ws.send(`We got your message: ${message}`)
-            })
-            
+        this.wss.on('connection', (ws)=>{
             ws.send('You are connected to the server')
-            let alive = true
-            
+        })
 
-            setInterval(()=>{
-                if(this.isAlive === false) {
-                    try{
-                        this.consumer.disconnect()
-                    }catch(err){
-                        console.log("Error disconnecting from kafka: ", err)
-                    }
-                    try{
-                        ws.terminate()
-                    }catch(err){
-                        console.log("Error disconnecting web socket client: ", err)
-                    }
-                }else{
-                    ws.ping(this.noop)
-                }
-            }, 30000)
-
-            try{
-                await this.consumer.disconnect()
-            }catch(err){}
-
-            try{
-                await this.consumer.connect()
-            }catch(err){
-                console.log("error connecting to Kafka: ", err)
-                
-            }
-            await this.consumer.subscribe({ topic: 'tweets', fromBeginning: false })
-            await this.consumer.run({
-                eachMessage: async ({ topic, partition, message}) => {
+        await this.consumer.connect()
+        await this.consumer.subscribe({ topic: 'tweets', fromBeginning: false })
+        await this.consumer.run({
+            eachMessage: async ({ topic, partition, message}) => {
+                this.wss.clients.forEach((ws)=>{
                     ws.send(message.value.toString())
-                }
-            })
-
-            ws.on('pong',()=>{
-                this.isAlive = true
-            })
+                })
+            }
         })
     }
-
-    
 }
 
 var tw = new TwitterWS()
