@@ -62,7 +62,9 @@ class TwitterWS {
                     try{
                         extendedTxt = tweet.extended_tweet.full_text.toLowerCase()
                     }catch(err){
-                        extendedTxt = tweet.quoted_status.extended_tweet.full_text.toLowerCase()
+                        try{
+                            extendedTxt = tweet.quoted_status.extended_tweet.full_text.toLowerCase()
+                        }catch(err){}
                     }
                     
                    
