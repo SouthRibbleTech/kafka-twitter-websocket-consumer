@@ -53,7 +53,7 @@ class TwitterWS {
         await this.consumer.run({
             eachMessage: async ({ topic, partition, message}) => {
                     var tweet = JSON.parse(message.value.toString())
-                    console.log(tweet)
+                    console.log("Tweet should be here", tweet)
                     var textTxt = null
                     var extendedTxt = null
                     try{
