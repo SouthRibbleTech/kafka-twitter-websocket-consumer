@@ -39,7 +39,7 @@ wss.on('connection', async (ws)=>{
     await consumer.subscribe({ topic: 'tweets', fromBeginning: false })
     await consumer.run({
         eachMessage: async ({ topic, partition, message}) => {
-            ws.send(JSON.parse(message.value.toString()))
+            ws.send(message.value.toString())
         }
     })
 
