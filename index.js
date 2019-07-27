@@ -57,7 +57,7 @@ class TwitterWS {
                     var extendedTxt = tweet.extended_tweet.full_text.toString().toLowerCase()
                     console.log(textTxt)
                     console.log("Extended: ", extendedTxt)
-                    for(var word of this.keyword_count){
+                    for(var word in this.keyword_count){
                         if(textTxt.indexOf(word)){
                             this.keyword_count[word] ++
                         }
