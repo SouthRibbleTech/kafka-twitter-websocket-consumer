@@ -68,9 +68,9 @@ class TwitterWS {
                 }
             }, 30000)
         
-            await consumer.connect()
-            await consumer.subscribe({ topic: 'tweets', fromBeginning: false })
-            await consumer.run({
+            await this.consumer.connect()
+            await this.consumer.subscribe({ topic: 'tweets', fromBeginning: false })
+            await this.consumer.run({
                 eachMessage: async ({ topic, partition, message}) => {
                     ws.send(message.value.toString())
                 }
