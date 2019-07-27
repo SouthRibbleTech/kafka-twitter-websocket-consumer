@@ -14,7 +14,7 @@ class TwitterWS {
     }
 
     
-    listen() {
+    async listen() {
         try{
             this.wss = new WebSocket.Server({
                 port: 9090,
