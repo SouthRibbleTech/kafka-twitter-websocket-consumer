@@ -73,12 +73,12 @@ class TwitterWS {
                   
                     for(var word in this.keyword_count){
                         if(textTxt){
-                            if(textTxt.indexOf(word)){
+                            if(textTxt.indexOf(word) !== -1){
                                 this.keyword_count[word] ++
                             }
                         }
                         if(extendedTxt){
-                            if(extendedTxt.indexOf(word)){
+                            if(extendedTxt.indexOf(word) !== -1){
                                 if(word === 'bitcoin'){
                                     console.log(word, extendedTxt)
                                 }
