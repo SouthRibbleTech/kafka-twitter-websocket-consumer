@@ -79,6 +79,9 @@ class TwitterWS {
                         }
                         if(extendedTxt){
                             if(extendedTxt.indexOf(word)){
+                                if(word === 'bitcoin'){
+                                    console.log(word, extendedTxt)
+                                }
                                 this.keyword_count[word] ++
                             }
                         }
